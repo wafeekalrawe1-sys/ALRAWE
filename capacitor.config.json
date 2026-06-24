@@ -1,0 +1,36 @@
+{
+  "appId": "com.wafeeq.ppl",
+  "appName": "WAFEEQ PPL",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#020b14",
+    "buildOptions": {
+      "keystorePath": "wafeeq.keystore",
+      "keystoreAlias": "wafeeq"
+    }
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#020b14",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "style": "Dark",
+      "backgroundColor": "#020b14"
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "dark"
+    }
+  }
+}
