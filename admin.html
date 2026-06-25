@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ADMIN — FITNESS CONTROL</title>
+<meta name="theme-color" content="#020b14">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap">
+<style>
+:root{
+  --bg:#020b14;--surface:#040f1c;--card:#071525;--border:#0d2d4a;--border-hi:#1a4060;
+  --text:#e0f4ff;--text-sub:#9ec8e0;--text-dim:#3d7a9a;--text-muted:#1a3a50;
+  --a1:#00b4d8;--a2:#00e5ff;--ag:linear-gradient(135deg,#023e8a,#0077b6,#00b4d8,#00e5ff);
+  --ag-glow:rgba(0,180,216,.4);--a-soft:rgba(0,180,216,.08);--a-mid:rgba(0,180,216,.20);
+  --green:#00ff88;--red:#ff2d55;--gold:#ffd60a;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100dvh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,180,216,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,.04) 1px,transparent 1px);
+  background-size:40px 40px;}
+
+/* AUTH */
+#auth-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:16px;}
+#auth-screen.hidden{display:none;}
+.auth-logo{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;background:var(--ag);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;}
+.auth-badge{font-size:9px;color:var(--red);background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.3);padding:4px 12px;border-radius:3px;font-family:'Share Tech Mono',monospace;letter-spacing:2px;}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;width:100%;max-width:340px;}
+.auth-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;padding:11px 13px;outline:none;margin-bottom:10px;transition:border-color .2s;}
+.auth-input:focus{border-color:var(--a2);}
+.auth-input::placeholder{color:var(--text-muted);}
+.auth-btn{width:100%;padding:12px;background:var(--ag);border:none;border-radius:6px;color:#000;font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer;}
+.auth-err{font-size:11px;color:var(--red);text-align:center;min-height:16px;margin:4px 0;}
+
+/* LAYOUT */
+#app{display:none;position:relative;z-index:1;}
+#app.visible{display:block;}
+.admin-header{position:sticky;top:0;z-index:100;background:rgba(2,11,20,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,45,85,.2);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.admin-title{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;background:linear-gradient(135deg,#ff2d55,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;}
+.admin-badge{font-size:9px;color:var(--red);background:rgba(255,45,85,.1);border:1px solid rgba(255,45,85,.25);padding:4px 10px;border-radius:3px;font-family:'Share Tech Mono',monospace;letter-spacing:2px;}
+.logout-btn{background:transparent;border:1px solid rgba(255,45,85,.3);color:var(--red);font-family:'Share Tech Mono',monospace;font-size:10px;padding:5px 10px;border-radius:3px;cursor:pointer;letter-spacing:1px;}
+
+/* TABS */
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:12px 16px;font-size:11px;font-weight:700;color:var(--text-dim);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;}
+.tab.active{color:var(--a2);border-bottom-color:var(--a2);}
+
+/* MAIN */
+.admin-main{max-width:600px;margin:0 auto;padding:16px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* SECTION */
+.section-title{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--a2);font-family:'Share Tech Mono',monospace;text-transform:uppercase;padding:16px 0 10px;opacity:.7;display:flex;align-items:center;gap:6px;}
+.section-title::before{content:'//';opacity:.6;}
+
+/* FORM */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden;}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.form-row{margin-bottom:10px;}
+.form-label{font-size:10px;font-weight:700;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:block;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Cairo',sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--a2);box-shadow:0 0 0 2px var(--a-soft);}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text-muted);}
+.form-textarea{resize:vertical;min-height:70px;line-height:1.6;}
+.form-select{appearance:none;-webkit-appearance:none;cursor:pointer;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.submit-btn{width:100%;padding:12px;background:var(--ag);border:none;border-radius:6px;color:#000;font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-top:6px;transition:opacity .2s;letter-spacing:.5px;}
+.submit-btn:active{opacity:.85;}
+.submit-btn.red{background:linear-gradient(135deg,#c0001a,#ff2d55);}
+
+/* LIST ITEMS */
+.list-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;}
+.list-item::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.li-icon{font-size:22px;flex-shrink:0;}
+.li-info{flex:1;min-width:0;}
+.li-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.li-sub{font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:.5px;}
+.li-actions{display:flex;gap:6px;flex-shrink:0;}
+.li-btn{padding:5px 10px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Share Tech Mono',monospace;letter-spacing:1px;border:1px solid;transition:all .2s;}
+.li-btn.edit{color:var(--a2);border-color:var(--a-mid);background:var(--a-soft);}
+.li-btn.del{color:var(--red);border-color:rgba(255,45,85,.3);background:rgba(255,45,85,.05);}
+.li-btn:active{transform:scale(.95);}
+
+/* STATS */
+.admin-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.admin-stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;position:relative;overflow:hidden;}
+.admin-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.as-icon{font-size:22px;margin-bottom:6px;}
+.as-val{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;background:var(--ag);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:3px;}
+.as-lbl{font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:.5px;}
+
+/* USER TABLE */
+.users-table{width:100%;border-collapse:collapse;}
+.users-table th{font-size:9px;font-weight:700;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;}
+.users-table td{font-size:12px;color:var(--text);padding:10px;border-bottom:1px solid rgba(13,45,74,.5);}
+.users-table tr:hover td{background:var(--a-soft);}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,180,216,.15);border:1px solid var(--a-mid);border-radius:6px;padding:10px 20px;font-size:12px;color:var(--a2);font-family:'Share Tech Mono',monospace;letter-spacing:1px;z-index:800;opacity:0;transition:opacity .3s,transform .3s;backdrop-filter:blur(12px);white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.success{border-color:rgba(0,255,136,.4);color:var(--green);}
+#toast.error{border-color:rgba(255,45,85,.4);color:var(--red);}
+
+.loading{text-align:center;padding:30px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;}
+.empty{text-align:center;padding:40px 20px;color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;line-height:2;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-logo">ADMIN PANEL</div>
+  <div class="auth-badge">🔒 وصول مقيد — المدرب فقط</div>
+  <div class="auth-card">
+    <div style="font-size:14px;font-weight:700;color:var(--text);text-align:center;margin-bottom:14px;">دخول المدرب</div>
+    <input class="auth-input" id="a-email" type="email" placeholder="البريد الإلكتروني" inputmode="email">
+    <input class="auth-input" id="a-pass" type="password" placeholder="كلمة المرور">
+    <div class="auth-err" id="a-err"></div>
+    <button class="auth-btn" onclick="adminLogin()">دخول ⚡</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="admin-header">
+    <div>
+      <div class="admin-title">ADMIN PANEL</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="admin-badge">🔴 LIVE</div>
+      <button class="logout-btn" onclick="adminLogout()">خروج</button>
+    </div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('dashboard')">📊 لوحة التحكم</div>
+    <div class="tab" onclick="switchTab('exercises')">🏋️ التمارين</div>
+    <div class="tab" onclick="switchTab('courses')">📚 الكورسات</div>
+    <div class="tab" onclick="switchTab('challenges')">🎯 التحديات</div>
+    <div class="tab" onclick="switchTab('users')">👥 المستخدمين</div>
+  </div>
+
+  <div class="admin-main">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="tab-panel active" id="panel-dashboard">
+      <div class="section-title">نظرة عامة</div>
+      <div class="admin-stats">
+        <div class="admin-stat"><div class="as-icon">👥</div><div class="as-val" id="stat-users">0</div><div class="as-lbl">مستخدمين</div></div>
+        <div class="admin-stat"><div class="as-icon">🏋️</div><div class="as-val" id="stat-ex">0</div><div class="as-lbl">تمارين</div></div>
+        <div class="admin-stat"><div class="as-icon">📚</div><div class="as-val" id="stat-courses">0</div><div class="as-lbl">كورسات</div></div>
+        <div class="admin-stat"><div class="as-icon">🎯</div><div class="as-val" id="stat-ch">0</div><div class="as-lbl">تحديات</div></div>
+      </div>
+
+      <div class="section-title">إضافة سريعة</div>
+      <!-- Quick Add Exercise -->
+      <div class="form-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">➕ تمرين جديد سريع</div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">اسم التمرين (عربي)</label>
+            <input class="form-input" id="q-name-ar" type="text" placeholder="بنش بريس">
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الاسم (إنجليزي)</label>
+            <input class="form-input" id="q-name-en" type="text" placeholder="Bench Press">
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">اليوم</label>
+            <select class="form-select" id="q-day">
+              <option value="push">Push — دفع</option>
+              <option value="pull">Pull — سحب</option>
+              <option value="legs">Legs — أرجل</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">السيتات × التكرار</label>
+            <input class="form-input" id="q-sets" type="text" placeholder="4×8-12">
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الصعوبة</label>
+            <select class="form-select" id="q-diff">
+              <option value="S">S — مركب أساسي</option>
+              <option value="A">A — ثانوي مهم</option>
+              <option value="B" selected>B — عزل متوسط</option>
+              <option value="C">C — عزل خفيف</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الترتيب</label>
+            <input class="form-input" id="q-order" type="number" placeholder="1" value="99">
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row">
+          <label class="form-label">ملاحظة تقنية (اختياري)</label>
+          <textarea class="form-textarea" id="q-note" placeholder="تلميح للأداء الصحيح..." style="min-height:50px"></textarea>
+        </div>
+        <button class="submit-btn" onclick="quickAddExercise()">إضافة التمرين ⚡</button>
+      </div>
+    </div>
+
+    <!-- ═══ EXERCISES ═══ -->
+    <div class="tab-panel" id="panel-exercises">
+      <div class="section-title">إدارة التمارين</div>
+
+      <!-- Filter -->
+      <div class="form-card" style="padding:12px 16px">
+        <select class="form-select" id="ex-filter" onchange="loadExercises()">
+          <option value="push">Push — دفع</option>
+          <option value="pull">Pull — سحب</option>
+          <option value="legs">Legs — أرجل</option>
+        </select>
+      </div>
+
+      <!-- Add Form -->
+      <div class="form-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">➕ إضافة / تعديل تمرين</div>
+        <input type="hidden" id="ex-edit-id">
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الاسم (عربي) *</label>
+            <input class="form-input" id="ex-name-ar" type="text" placeholder="اسم التمرين بالعربي">
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الاسم (إنجليزي)</label>
+            <input class="form-input" id="ex-name-en" type="text" placeholder="Exercise Name">
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">اليوم *</label>
+            <select class="form-select" id="ex-day">
+              <option value="push">Push</option>
+              <option value="pull">Pull</option>
+              <option value="legs">Legs</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الصعوبة *</label>
+            <select class="form-select" id="ex-diff">
+              <option value="S">S — أساسي</option>
+              <option value="A">A — مهم</option>
+              <option value="B">B — متوسط</option>
+              <option value="C">C — خفيف</option>
+            </select>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">السيتات × التكرار</label>
+            <input class="form-input" id="ex-sets" type="text" placeholder="4×8-12">
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الترتيب</label>
+            <input class="form-input" id="ex-order" type="number" placeholder="1" value="99">
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row">
+          <label class="form-label">ملاحظة تقنية</label>
+          <textarea class="form-textarea" id="ex-note" placeholder="نصيحة الأداء الصحيح..."></textarea>
+        </div>
+        <div class="form-row-2">
+          <button class="submit-btn" onclick="saveExercise()">💾 حفظ</button>
+          <button class="submit-btn" style="background:var(--surface);color:var(--text-dim);border:1px solid var(--border)" onclick="clearExForm()">✕ إلغاء</button>
+        </div>
+      </div>
+
+      <div class="section-title">قائمة التمارين</div>
+      <div id="ex-list"><div class="loading">تحميل</div></div>
+    </div>
+
+    <!-- ═══ COURSES ═══ -->
+    <div class="tab-panel" id="panel-courses">
+      <div class="section-title">إدارة الكورسات</div>
+      <div class="form-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">➕ إضافة / تعديل كورس</div>
+        <input type="hidden" id="co-edit-id">
+        <div class="form-row">
+          <label class="form-label">اسم الكورس *</label>
+          <input class="form-input" id="co-name" type="text" placeholder="برنامج بناء العضلات">
+        </div>
+        <div class="form-row">
+          <label class="form-label">الوصف *</label>
+          <textarea class="form-textarea" id="co-desc" placeholder="وصف مختصر للكورس..."></textarea>
+        </div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الأيقونة (إيموجي)</label>
+            <input class="form-input" id="co-icon" type="text" placeholder="💪" value="💪">
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">المستوى</label>
+            <select class="form-select" id="co-level">
+              <option value="مبتدئ">مبتدئ</option>
+              <option value="متوسط">متوسط</option>
+              <option value="متقدم">متقدم</option>
+            </select>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">المدة</label>
+            <input class="form-input" id="co-duration" type="text" placeholder="8 أسابيع">
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الترتيب</label>
+            <input class="form-input" id="co-order" type="number" placeholder="1" value="99">
+          </div>
+        </div>
+        <div class="form-row-2" style="margin-top:10px">
+          <button class="submit-btn" onclick="saveCourse()">💾 حفظ الكورس</button>
+          <button class="submit-btn" style="background:var(--surface);color:var(--text-dim);border:1px solid var(--border)" onclick="clearCoForm()">✕ إلغاء</button>
+        </div>
+      </div>
+      <div class="section-title">الكورسات الحالية</div>
+      <div id="co-list"><div class="loading">تحميل</div></div>
+    </div>
+
+    <!-- ═══ CHALLENGES ═══ -->
+    <div class="tab-panel" id="panel-challenges">
+      <div class="section-title">إدارة التحديات الأسبوعية</div>
+      <div class="form-card">
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">➕ تحدي جديد</div>
+        <input type="hidden" id="ch-edit-id">
+        <div class="form-row">
+          <label class="form-label">عنوان التحدي *</label>
+          <input class="form-input" id="ch-title" type="text" placeholder="أكمل 3 جلسات هذا الأسبوع">
+        </div>
+        <div class="form-row">
+          <label class="form-label">الوصف</label>
+          <input class="form-input" id="ch-desc" type="text" placeholder="Push + Pull + Legs">
+        </div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الأيقونة</label>
+            <input class="form-input" id="ch-icon" type="text" placeholder="🏋️" value="🎯">
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">الهدف (عدد)</label>
+            <input class="form-input" id="ch-target" type="number" placeholder="3" value="3">
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row-2">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">XP المكافأة</label>
+            <input class="form-input" id="ch-xp" type="number" placeholder="100" value="100">
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">النوع</label>
+            <select class="form-select" id="ch-type">
+              <option value="sessions">جلسات تمرين</option>
+              <option value="exercises">عدد تمارين</option>
+              <option value="water">شرب ماء</option>
+              <option value="sleep">نوم</option>
+              <option value="mind">تحدي عقلي</option>
+              <option value="custom">مخصص</option>
+            </select>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="form-row">
+          <label class="form-label">الترتيب</label>
+          <input class="form-input" id="ch-order" type="number" placeholder="1" value="99">
+        </div>
+        <div class="form-row-2" style="margin-top:4px">
+          <button class="submit-btn" onclick="saveChallenge()">💾 حفظ التحدي</button>
+          <button class="submit-btn" style="background:var(--surface);color:var(--text-dim);border:1px solid var(--border)" onclick="clearChForm()">✕ إلغاء</button>
+        </div>
+      </div>
+      <div class="section-title">التحديات الحالية</div>
+      <div id="ch-list"><div class="loading">تحميل</div></div>
+    </div>
+
+    <!-- ═══ USERS ═══ -->
+    <div class="tab-panel" id="panel-users">
+      <div class="section-title">المستخدمين</div>
+      <div id="users-list"><div class="loading">تحميل</div></div>
+    </div>
+
+  </div><!-- /admin-main -->
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc,
+  collection, getDocs, query, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDwJvvw1om-WDoKHLMgRCOlkRvb04Ok99U",
+  authDomain: "wafeek-122a4.firebaseapp.com",
+  projectId: "wafeek-122a4",
+  storageBucket: "wafeek-122a4.firebasestorage.app",
+  messagingSenderId: "230711264269",
+  appId: "1:230711264269:web:c20f739b9aa36521f3c144"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+// ADMIN EMAIL — غير هذا لبريدك
+const ADMIN_EMAIL = 'your_admin@email.com';
+
+// ══ AUTH ══
+onAuthStateChanged(auth, user => {
+  if(user && user.email === ADMIN_EMAIL){
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    loadDashboard();
+  } else if(user) {
+    showToast('ليس لديك صلاحية Admin','error');
+    signOut(auth);
+  }
+});
+
+window.adminLogin = async function(){
+  const email = document.getElementById('a-email').value.trim();
+  const pass  = document.getElementById('a-pass').value;
+  const err   = document.getElementById('a-err');
+  err.textContent='';
+  try {
+    await signInWithEmailAndPassword(auth,email,pass);
+  } catch(e){
+    const msgs={'auth/wrong-password':'كلمة المرور خاطئة','auth/user-not-found':'المستخدم غير موجود','auth/invalid-email':'بريد غير صحيح'};
+    err.textContent=msgs[e.code]||'خطأ في تسجيل الدخول';
+  }
+};
+
+window.adminLogout = async function(){
+  if(confirm('تسجيل الخروج؟')) await signOut(auth);
+};
+
+// ══ TABS ══
+window.switchTab = function(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  if(tab==='exercises') loadExercises();
+  if(tab==='courses') loadCourses();
+  if(tab==='challenges') loadChallenges();
+  if(tab==='users') loadUsers();
+};
+
+// ══ DASHBOARD ══
+async function loadDashboard(){
+  try {
+    const usersSnap = await getDocs(collection(db,'users'));
+    document.getElementById('stat-users').textContent=usersSnap.size;
+
+    let exCount=0;
+    for(const day of ['push','pull','legs']){
+      const s=await getDocs(collection(db,'workouts',day,'exercises'));
+      exCount+=s.size;
+    }
+    document.getElementById('stat-ex').textContent=exCount;
+
+    const coSnap=await getDocs(collection(db,'courses'));
+    document.getElementById('stat-courses').textContent=coSnap.size;
+
+    const chSnap=await getDocs(collection(db,'challenges'));
+    document.getElementById('stat-ch').textContent=chSnap.size;
+  } catch(e){ console.log(e); }
+}
+
+// ══ EXERCISES ══
+window.loadExercises = async function(){
+  const day = document.getElementById('ex-filter')?.value||'push';
+  const el = document.getElementById('ex-list');
+  el.innerHTML='<div class="loading">تحميل</div>';
+  try {
+    const snap=await getDocs(query(collection(db,'workouts',day,'exercises'),orderBy('order')));
+    const items=[];
+    snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    if(!items.length){el.innerHTML='<div class="empty">لا يوجد تمارين لهذا اليوم<br>أضف من الأعلى ⬆</div>';return;}
+    el.innerHTML=items.map(ex=>`<div class="list-item">
+      <div class="li-icon">${ex.diff==='S'?'🔴':ex.diff==='A'?'🔵':ex.diff==='B'?'🟡':'🟢'}</div>
+      <div class="li-info">
+        <div class="li-title">${ex.nameAr||ex.name||'—'}</div>
+        <div class="li-sub">${ex.nameEn||''} · ${ex.sets||''} · ${ex.diff||''}</div>
+      </div>
+      <div class="li-actions">
+        <button class="li-btn edit" onclick='editExercise(${JSON.stringify({...ex,day})})'>تعديل</button>
+        <button class="li-btn del" onclick="deleteExercise('${day}','${ex.id}')">حذف</button>
+      </div>
+    </div>`).join('');
+  } catch(e){ el.innerHTML='<div class="empty">خطأ في التحميل</div>'; }
+};
+
+window.editExercise = function(ex){
+  document.getElementById('ex-edit-id').value=ex.id;
+  document.getElementById('ex-name-ar').value=ex.nameAr||ex.name||'';
+  document.getElementById('ex-name-en').value=ex.nameEn||'';
+  document.getElementById('ex-day').value=ex.day||'push';
+  document.getElementById('ex-diff').value=ex.diff||'B';
+  document.getElementById('ex-sets').value=ex.sets||'';
+  document.getElementById('ex-order').value=ex.order||99;
+  document.getElementById('ex-note').value=ex.note||'';
+  document.querySelector('[onclick="switchTab(\'exercises\')"]').click();
+  window.scrollTo(0,200);
+};
+
+window.saveExercise = async function(){
+  const day=document.getElementById('ex-day').value;
+  const nameAr=document.getElementById('ex-name-ar').value.trim();
+  if(!nameAr){showToast('أدخل اسم التمرين','error');return;}
+  const data={
+    nameAr, name:nameAr,
+    nameEn:document.getElementById('ex-name-en').value.trim(),
+    diff:document.getElementById('ex-diff').value,
+    sets:document.getElementById('ex-sets').value.trim(),
+    order:parseInt(document.getElementById('ex-order').value)||99,
+    note:document.getElementById('ex-note').value.trim(),
+    updatedAt:serverTimestamp()
+  };
+  const editId=document.getElementById('ex-edit-id').value;
+  try {
+    if(editId){
+      await updateDoc(doc(db,'workouts',day,'exercises',editId),data);
+      showToast('✓ تم التعديل','success');
+    } else {
+      await addDoc(collection(db,'workouts',day,'exercises'),{...data,createdAt:serverTimestamp()});
+      showToast('✓ تمت الإضافة','success');
+    }
+    clearExForm();
+    loadExercises();
+    loadDashboard();
+  } catch(e){ showToast('خطأ: '+e.message,'error'); }
+};
+
+window.deleteExercise = async function(day,id){
+  if(!confirm('حذف هذا التمرين نهائياً؟')) return;
+  try {
+    await deleteDoc(doc(db,'workouts',day,'exercises',id));
+    showToast('✓ تم الحذف','success');
+    loadExercises();
+    loadDashboard();
+  } catch(e){ showToast('خطأ في الحذف','error'); }
+};
+
+window.clearExForm = function(){
+  ['ex-edit-id','ex-name-ar','ex-name-en','ex-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ex-diff').value='B';
+  document.getElementById('ex-order').value='99';
+};
+
+window.quickAddExercise = async function(){
+  const day=document.getElementById('q-day').value;
+  const nameAr=document.getElementById('q-name-ar').value.trim();
+  if(!nameAr){showToast('أدخل اسم التمرين','error');return;}
+  const data={
+    nameAr,name:nameAr,
+    nameEn:document.getElementById('q-name-en').value.trim(),
+    diff:document.getElementById('q-diff').value,
+    sets:document.getElementById('q-sets').value.trim()||'3×10',
+    order:parseInt(document.getElementById('q-order').value)||99,
+    note:document.getElementById('q-note').value.trim(),
+    createdAt:serverTimestamp()
+  };
+  try {
+    await addDoc(collection(db,'workouts',day,'exercises'),data);
+    showToast('✓ تمت الإضافة بنجاح!','success');
+    ['q-name-ar','q-name-en','q-sets','q-note'].forEach(id=>document.getElementById(id).value='');
+    loadDashboard();
+  } catch(e){ showToast('خطأ: '+e.message,'error'); }
+};
+
+// ══ COURSES ══
+window.loadCourses = async function(){
+  const el=document.getElementById('co-list');
+  el.innerHTML='<div class="loading">تحميل</div>';
+  try {
+    const snap=await getDocs(query(collection(db,'courses'),orderBy('order')));
+    const items=[];
+    snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    if(!items.length){el.innerHTML='<div class="empty">لا يوجد كورسات<br>أضف من الأعلى ⬆</div>';return;}
+    el.innerHTML=items.map(c=>`<div class="list-item">
+      <div class="li-icon">${c.icon||'📚'}</div>
+      <div class="li-info">
+        <div class="li-title">${c.name||'—'}</div>
+        <div class="li-sub">${c.level||''} · ${c.duration||''}</div>
+      </div>
+      <div class="li-actions">
+        <button class="li-btn edit" onclick='editCourse(${JSON.stringify(c)})'>تعديل</button>
+        <button class="li-btn del" onclick="deleteCourse('${c.id}')">حذف</button>
+      </div>
+    </div>`).join('');
+  } catch(e){ el.innerHTML='<div class="empty">خطأ في التحميل</div>'; }
+};
+
+window.editCourse = function(c){
+  document.getElementById('co-edit-id').value=c.id;
+  document.getElementById('co-name').value=c.name||'';
+  document.getElementById('co-desc').value=c.desc||'';
+  document.getElementById('co-icon').value=c.icon||'💪';
+  document.getElementById('co-level').value=c.level||'مبتدئ';
+  document.getElementById('co-duration').value=c.duration||'';
+  document.getElementById('co-order').value=c.order||99;
+  window.scrollTo(0,200);
+};
+
+window.saveCourse = async function(){
+  const name=document.getElementById('co-name').value.trim();
+  if(!name){showToast('أدخل اسم الكورس','error');return;}
+  const data={
+    name,
+    desc:document.getElementById('co-desc').value.trim(),
+    icon:document.getElementById('co-icon').value.trim()||'💪',
+    level:document.getElementById('co-level').value,
+    duration:document.getElementById('co-duration').value.trim(),
+    order:parseInt(document.getElementById('co-order').value)||99,
+    updatedAt:serverTimestamp()
+  };
+  const editId=document.getElementById('co-edit-id').value;
+  try {
+    if(editId){ await updateDoc(doc(db,'courses',editId),data); showToast('✓ تم التعديل','success'); }
+    else { await addDoc(collection(db,'courses'),{...data,createdAt:serverTimestamp()}); showToast('✓ تمت الإضافة','success'); }
+    clearCoForm(); loadCourses(); loadDashboard();
+  } catch(e){ showToast('خطأ: '+e.message,'error'); }
+};
+
+window.deleteCourse = async function(id){
+  if(!confirm('حذف هذا الكورس نهائياً؟')) return;
+  try { await deleteDoc(doc(db,'courses',id)); showToast('✓ تم الحذف','success'); loadCourses(); loadDashboard(); }
+  catch(e){ showToast('خطأ','error'); }
+};
+
+window.clearCoForm = function(){
+  ['co-edit-id','co-name','co-desc','co-duration'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('co-icon').value='💪';
+  document.getElementById('co-order').value='99';
+};
+
+// ══ CHALLENGES ══
+window.loadChallenges = async function(){
+  const el=document.getElementById('ch-list');
+  el.innerHTML='<div class="loading">تحميل</div>';
+  try {
+    const snap=await getDocs(query(collection(db,'challenges'),orderBy('order')));
+    const items=[];
+    snap.forEach(d=>items.push({id:d.id,...d.data()}));
+    if(!items.length){el.innerHTML='<div class="empty">لا يوجد تحديات<br>أضف من الأعلى ⬆</div>';return;}
+    el.innerHTML=items.map(c=>`<div class="list-item">
+      <div class="li-icon">${c.icon||'🎯'}</div>
+      <div class="li-info">
+        <div class="li-title">${c.title||'—'}</div>
+        <div class="li-sub">هدف: ${c.target||1} · +${c.xp||50} XP · ${c.type||''}</div>
+      </div>
+      <div class="li-actions">
+        <button class="li-btn edit" onclick='editChallenge(${JSON.stringify(c)})'>تعديل</button>
+        <button class="li-btn del" onclick="deleteChallenge('${c.id}')">حذف</button>
+      </div>
+    </div>`).join('');
+  } catch(e){ el.innerHTML='<div class="empty">خطأ في التحميل</div>'; }
+};
+
+window.editChallenge = function(c){
+  document.getElementById('ch-edit-id').value=c.id;
+  document.getElementById('ch-title').value=c.title||'';
+  document.getElementById('ch-desc').value=c.desc||'';
+  document.getElementById('ch-icon').value=c.icon||'🎯';
+  document.getElementById('ch-target').value=c.target||3;
+  document.getElementById('ch-xp').value=c.xp||100;
+  document.getElementById('ch-type').value=c.type||'custom';
+  document.getElementById('ch-order').value=c.order||99;
+  window.scrollTo(0,200);
+};
+
+window.saveChallenge = async function(){
+  const title=document.getElementById('ch-title').value.trim();
+  if(!title){showToast('أدخل عنوان التحدي','error');return;}
+  const data={
+    title,
+    desc:document.getElementById('ch-desc').value.trim(),
+    icon:document.getElementById('ch-icon').value.trim()||'🎯',
+    target:parseInt(document.getElementById('ch-target').value)||3,
+    xp:parseInt(document.getElementById('ch-xp').value)||100,
+    type:document.getElementById('ch-type').value,
+    order:parseInt(document.getElementById('ch-order').value)||99,
+    updatedAt:serverTimestamp()
+  };
+  const editId=document.getElementById('ch-edit-id').value;
+  try {
+    if(editId){ await updateDoc(doc(db,'challenges',editId),data); showToast('✓ تم التعديل','success'); }
+    else { await addDoc(collection(db,'challenges'),{...data,createdAt:serverTimestamp()}); showToast('✓ تمت الإضافة','success'); }
+    clearChForm(); loadChallenges(); loadDashboard();
+  } catch(e){ showToast('خطأ: '+e.message,'error'); }
+};
+
+window.deleteChallenge = async function(id){
+  if(!confirm('حذف هذا التحدي نهائياً؟')) return;
+  try { await deleteDoc(doc(db,'challenges',id)); showToast('✓ تم الحذف','success'); loadChallenges(); loadDashboard(); }
+  catch(e){ showToast('خطأ','error'); }
+};
+
+window.clearChForm = function(){
+  ['ch-edit-id','ch-title','ch-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ch-icon').value='🎯';
+  document.getElementById('ch-target').value='3';
+  document.getElementById('ch-xp').value='100';
+  document.getElementById('ch-order').value='99';
+};
+
+// ══ USERS ══
+window.loadUsers = async function(){
+  const el=document.getElementById('users-list');
+  el.innerHTML='<div class="loading">تحميل</div>';
+  try {
+    const snap=await getDocs(collection(db,'users'));
+    const users=[];
+    snap.forEach(d=>users.push({id:d.id,...d.data()}));
+    if(!users.length){el.innerHTML='<div class="empty">لا يوجد مستخدمين بعد</div>';return;}
+    el.innerHTML=`<div class="form-card" style="overflow-x:auto">
+      <table class="users-table">
+        <tr><th>الاسم</th><th>XP</th><th>LVL</th><th>تمارين</th><th>سلسلة</th></tr>
+        ${users.map(u=>`<tr>
+          <td>${u.name||'—'}</td>
+          <td style="color:var(--a2);font-family:'Share Tech Mono',monospace">${u.xp||0}</td>
+          <td style="color:var(--gold);font-family:'Share Tech Mono',monospace">${getLevel(u.xp||0)}</td>
+          <td>${u.totalEx||0}</td>
+          <td>🔥${u.streak||0}</td>
+        </tr>`).join('')}
+      </table>
+    </div>`;
+  } catch(e){ el.innerHTML='<div class="empty">خطأ في التحميل</div>'; }
+};
+
+function getLevel(xp){ const LV=[0,100,250,500,900,1500,2500]; let l=0; for(let i=LV.length-1;i>=0;i--){if(xp>=LV[i]){l=i;break;}} return l; }
+
+// ══ TOAST ══
+let toastT=null;
+window.showToast=function(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=''; t.classList.add('show');
+  if(type) t.classList.add(type);
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3000);
+};
+</script>
+</body>
+</html>
