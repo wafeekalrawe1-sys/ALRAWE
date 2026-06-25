@@ -451,7 +451,13 @@ window.switchPage = function(page){
 function updateGreeting(){
   const name = currentUser?.displayName || userData?.name || 'بطل';
   const h = new Date().getHours();
-  const gr = h<12?'صباح الخير':'h<18?'مساء الخير':'مساء النور';
+  let gr = 'مساء النور';
+
+if (h < 12) {
+  gr = 'صباح الخير';
+} else if (h < 18) {
+  gr = 'مساء الخير';
+}
   document.getElementById('home-greeting').textContent = gr+' '+name+' 👋';
   const days=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
   const today=new Date();
@@ -619,7 +625,9 @@ function isExDone(id){
 }
 
 window.toggleEx = function(el){
-  el.closest('.ex-card')?.[0]?.classList.toggle('expanded');
+  const card = el.closest('.ex-card');
+  if(card) card.classList.toggle('expanded');
+}
   // find parent ex-card header
   const card = el.closest('.ex-header');
   if(card){
