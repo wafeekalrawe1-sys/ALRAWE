@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>WAFEEQ FITNESS</title>
+<meta name="theme-color" content="#020b14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap">
+<style>
+:root {
+  --bg:#020b14; --surface:#040f1c; --card:#071525; --border:#0d2d4a; --border-hi:#1a4060;
+  --text:#e0f4ff; --text-sub:#9ec8e0; --text-dim:#3d7a9a; --text-muted:#1a3a50;
+  --a1:#00b4d8; --a2:#00e5ff; --ag:linear-gradient(135deg,#023e8a,#0077b6,#00b4d8,#00e5ff);
+  --ag-glow:rgba(0,180,216,.4); --a-soft:rgba(0,180,216,.08); --a-mid:rgba(0,180,216,.20);
+  --green:#00ff88; --red:#ff2d55; --gold:#ffd60a;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth;overscroll-behavior:none;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100dvh;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 80px);overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,180,216,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,.05) 1px,transparent 1px);
+  background-size:40px 40px;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:orbFloat 16s ease-in-out infinite alternate;}
+.orb-1{width:500px;height:500px;background:rgba(0,180,216,.12);top:-150px;left:-100px;}
+.orb-2{width:350px;height:350px;background:rgba(0,119,182,.08);bottom:10%;right:-80px;animation-delay:-6s;}
+@keyframes orbFloat{0%{transform:translate(0,0)}100%{transform:translate(20px,-30px)}}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:9999;background:#020b14;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .5s,visibility .5s;}
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.splash-title{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;background:var(--ag);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:4px;}
+.splash-bar{width:180px;height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
+.splash-fill{height:100%;background:var(--ag);animation:splashLoad 2s ease-out forwards;}
+@keyframes splashLoad{0%{width:0}100%{width:100%}}
+
+/* AUTH */
+#auth-screen{position:fixed;inset:0;z-index:500;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:20px;}
+#auth-screen.visible{display:flex;}
+.auth-logo{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;background:var(--ag);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;margin-bottom:8px;}
+.auth-sub{font-size:11px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:360px;}
+.auth-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;text-align:center;}
+.auth-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;padding:12px 14px;outline:none;margin-bottom:10px;transition:border-color .2s;}
+.auth-input:focus{border-color:var(--a2);}
+.auth-input::placeholder{color:var(--text-muted);}
+.auth-btn{width:100%;padding:13px;background:var(--ag);border:none;border-radius:6px;color:#000;font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px;transition:opacity .2s;}
+.auth-btn:active{opacity:.85;}
+.auth-switch{text-align:center;margin-top:12px;font-size:12px;color:var(--text-dim);}
+.auth-switch span{color:var(--a2);cursor:pointer;font-weight:700;}
+.auth-err{font-size:11px;color:var(--red);text-align:center;min-height:16px;margin-top:4px;}
+
+/* HEADER */
+.app-header{position:sticky;top:0;z-index:100;background:rgba(2,11,20,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,180,216,.15);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.header-brand{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;background:var(--ag);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.user-level{font-size:9px;font-weight:700;color:var(--a2);background:var(--a-soft);border:1px solid var(--a-mid);padding:4px 10px;border-radius:3px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(2,11,20,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,180,216,.12);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border:none;background:transparent;color:var(--text-muted);cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:7.5px;letter-spacing:1px;text-transform:uppercase;transition:color .2s;-webkit-tap-highlight-color:transparent;}
+.nav-item .ni{font-size:20px;transition:transform .2s;}
+.nav-item.active{color:var(--a2);}
+.nav-item.active .ni{transform:scale(1.15);filter:drop-shadow(0 0 6px var(--ag-glow));}
+
+/* PAGES */
+.page{display:none;position:relative;z-index:1;}
+.page.active{display:block;}
+.main{max-width:540px;margin:0 auto;padding:0 14px 16px;}
+.page-header{padding:18px 0 10px;}
+.page-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;background:var(--ag);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;}
+.page-sub{font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:2px;margin-top:3px;}
+.section-lbl{font-size:8px;font-weight:700;letter-spacing:4px;color:var(--a2);text-transform:uppercase;padding:16px 0 8px;font-family:'Share Tech Mono',monospace;opacity:.6;display:flex;align-items:center;gap:6px;}
+.section-lbl::before{content:'//';opacity:.6;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;position:relative;transition:border-color .2s,transform .15s;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.card:active{transform:scale(.99);}
+.card-body{padding:16px;}
+
+/* CHALLENGE CARD */
+.challenge-card{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;position:relative;}
+.challenge-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.ch-header{padding:14px 16px 10px;display:flex;align-items:center;gap:12px;}
+.ch-icon{font-size:28px;filter:drop-shadow(0 0 8px var(--ag-glow));}
+.ch-info{flex:1;}
+.ch-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.ch-desc{font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:.5px;}
+.ch-xp{font-size:10px;font-weight:700;color:var(--gold);background:rgba(255,214,10,.08);border:1px solid rgba(255,214,10,.2);padding:3px 8px;border-radius:3px;font-family:'Share Tech Mono',monospace;white-space:nowrap;}
+.ch-progress{height:3px;background:var(--border);margin:0 16px 14px;}
+.ch-fill{height:100%;background:var(--ag);border-radius:2px;transition:width .4s;}
+.ch-footer{padding:0 16px 14px;display:flex;align-items:center;justify-content:space-between;}
+.ch-count{font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
+.ch-btn{padding:7px 16px;background:var(--a-soft);border:1px solid var(--a-mid);border-radius:4px;color:var(--a2);font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all .2s;}
+.ch-btn:hover{background:var(--a-mid);}
+.ch-btn.done{background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.3);color:var(--green);}
+
+/* EXERCISE CARD */
+.ex-card{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;position:relative;}
+.ex-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.ex-header{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.ex-check{width:22px;height:22px;border-radius:3px;border:1px solid var(--border-hi);background:transparent;cursor:pointer;flex-shrink:0;appearance:none;-webkit-appearance:none;position:relative;transition:all .2s;}
+.ex-check:checked{background:var(--a-soft);border-color:var(--a2);box-shadow:0 0 12px var(--ag-glow);}
+.ex-check:checked::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--a2);font-size:13px;font-weight:700;}
+.ex-info{flex:1;}
+.ex-name{font-size:14px;font-weight:700;color:var(--text);}
+.ex-en{font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.ex-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.ex-sets{font-size:10px;font-weight:700;color:var(--a2);background:var(--a-soft);border:1px solid rgba(0,180,216,.15);padding:4px 8px;border-radius:3px;font-family:'Share Tech Mono',monospace;}
+.diff-badge{font-size:8px;font-weight:800;padding:2px 6px;border-radius:3px;border:1px solid;font-family:'Share Tech Mono',monospace;text-transform:uppercase;}
+.diff-s{color:#ff2d55;background:rgba(255,45,85,.1);border-color:rgba(255,45,85,.3);}
+.diff-a{color:#00e5ff;background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.28);}
+.diff-b{color:#ffd60a;background:rgba(255,214,10,.08);border-color:rgba(255,214,10,.25);}
+.diff-c{color:#00ff88;background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.22);}
+.ex-details{max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,opacity .25s,padding .25s;}
+.ex-card.expanded .ex-details{max-height:150px;opacity:1;padding:0 16px 14px;}
+.ex-note{font-size:10px;color:var(--text-sub);line-height:1.7;padding:8px 10px;background:var(--a-soft);border-right:2px solid var(--a2);}
+
+/* LEVEL CARD */
+.level-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;position:relative;overflow:hidden;}
+.level-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.lv-badge{width:50px;height:50px;border-radius:50%;background:var(--a-soft);border:2px solid var(--a-mid);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px var(--ag-glow);}
+.lv-num{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--a2);line-height:1;}
+.lv-lbl{font-size:7px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
+.lv-info{flex:1;}
+.lv-name{font-size:13px;font-weight:700;color:var(--text);}
+.xp-bar{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden;}
+.xp-fill{height:100%;background:var(--ag);border-radius:2px;transition:width .5s;}
+.xp-text{font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-top:4px;display:flex;justify-content:space-between;}
+.streak-badge{font-size:12px;color:var(--gold);font-weight:700;white-space:nowrap;}
+
+/* COURSE CARD */
+.course-card{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;}
+.course-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.course-card:active{transform:scale(.99);}
+.course-img{width:100%;height:120px;background:linear-gradient(135deg,var(--surface),var(--card-hi,#0a1c30));display:flex;align-items:center;justify-content:center;font-size:48px;border-bottom:1px solid var(--border);}
+.course-body{padding:14px 16px;}
+.course-name{font-size:15px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.course-desc{font-size:11px;color:var(--text-dim);line-height:1.6;margin-bottom:10px;}
+.course-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.course-tag{font-size:9px;font-weight:700;color:var(--a2);background:var(--a-soft);border:1px solid var(--a-mid);padding:3px 8px;border-radius:3px;font-family:'Share Tech Mono',monospace;letter-spacing:.5px;}
+.course-progress{height:3px;background:var(--border);margin:10px 0 0;}
+.course-fill{height:100%;background:var(--ag);border-radius:2px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.stat-icon{font-size:20px;margin-bottom:6px;}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;background:var(--ag);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:3px;}
+.stat-lbl{font-size:9px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:1px;line-height:1.4;}
+.stat-card.full{grid-column:1/-1;}
+
+/* PROFILE */
+.profile-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 16px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden;}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a-mid),transparent);}
+.profile-avatar{width:70px;height:70px;border-radius:50%;background:var(--ag);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;box-shadow:0 0 20px var(--ag-glow);}
+.profile-name{font-size:18px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.profile-email{font-size:10px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;letter-spacing:.5px;}
+.logout-btn{width:100%;padding:12px;background:transparent;border:1px solid rgba(255,45,85,.25);border-radius:6px;color:var(--red);font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:12px;transition:all .2s;}
+.logout-btn:hover{background:rgba(255,45,85,.08);}
+
+/* TOAST */
+#toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,180,216,.15);border:1px solid var(--a-mid);border-radius:6px;padding:10px 20px;font-size:12px;color:var(--a2);font-family:'Share Tech Mono',monospace;letter-spacing:1px;z-index:800;opacity:0;transition:opacity .3s,transform .3s;backdrop-filter:blur(12px);white-space:nowrap;box-shadow:0 0 20px var(--ag-glow);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* LOADING */
+.loading{text-align:center;padding:40px 20px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;}
+.loading::after{content:'...';animation:dots 1.5s infinite;}
+@keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
+
+/* WEEK CHART */
+.week-chart{display:flex;align-items:flex-end;gap:6px;height:70px;padding:8px 0 0;}
+.wb{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.wb-bar{width:100%;background:var(--border);border-radius:3px;height:50px;display:flex;align-items:flex-end;}
+.wb-fill{width:100%;background:var(--ag);border-radius:3px;min-height:2px;box-shadow:0 0 6px var(--ag-glow);}
+.wb-lbl{font-size:8px;color:var(--text-muted);font-family:'Share Tech Mono',monospace;}
+.wb-lbl.today{color:var(--a2);}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;line-height:2;}
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-title">FITNESS</div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:4px;margin-bottom:8px;">POWERED BY WAFEEQ</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+</div>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-logo">FITNESS</div>
+  <div class="auth-sub">// نظام التدريب المتكامل</div>
+  <div class="auth-card">
+    <div class="auth-title" id="auth-title">تسجيل الدخول</div>
+    <input class="auth-input" id="auth-name" type="text" placeholder="الاسم" style="display:none">
+    <input class="auth-input" id="auth-email" type="email" placeholder="البريد الإلكتروني" inputmode="email">
+    <input class="auth-input" id="auth-pass" type="password" placeholder="كلمة المرور">
+    <div class="auth-err" id="auth-err"></div>
+    <button class="auth-btn" onclick="authSubmit()" id="auth-submit-btn">دخول ⚡</button>
+    <div class="auth-switch">
+      <span id="auth-switch-text">ما عندك حساب؟ </span>
+      <span onclick="toggleAuth()">إنشاء حساب</span>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- HEADER -->
+<header class="app-header" id="app-header" style="display:none">
+  <div class="header-brand">FITNESS ⚡</div>
+  <div class="header-right">
+    <div class="user-level" id="header-level">LVL 1</div>
+  </div>
+</header>
+
+<!-- ══ PAGE: HOME ══ -->
+<div class="page active" id="page-home">
+<div class="main">
+
+  <div class="page-header">
+    <div class="page-title" id="home-greeting">أهلاً! 👋</div>
+    <div class="page-sub" id="home-date">// تمرين اليوم</div>
+  </div>
+
+  <!-- Level Card -->
+  <div class="level-card" id="level-card">
+    <div class="lv-badge">
+      <div class="lv-num" id="lc-lv">1</div>
+      <div class="lv-lbl">LVL</div>
+    </div>
+    <div class="lv-info">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="lv-name" id="lc-name">مبتدئ ⚡</div>
+        <div class="streak-badge" id="lc-streak">🔥 0</div>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" id="lc-xp-fill" style="width:0%"></div></div>
+      <div class="xp-text"><span id="lc-xp-text">0 XP</span><span id="lc-next">100 XP للترقية</span></div>
+    </div>
+  </div>
+
+  <!-- Weekly Challenge -->
+  <div class="section-lbl">تحديات الأسبوع</div>
+  <div id="challenges-list"><div class="loading">تحميل التحديات</div></div>
+
+  <!-- Today's Workout -->
+  <div class="section-lbl">تمرين اليوم</div>
+  <div id="today-workout-card"><div class="loading">تحميل التمارين</div></div>
+
+</div>
+</div>
+
+<!-- ══ PAGE: COURSES ══ -->
+<div class="page" id="page-courses">
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">COURSES</div>
+    <div class="page-sub">// الكورسات التدريبية</div>
+  </div>
+  <div id="courses-list"><div class="loading">تحميل الكورسات</div></div>
+</div>
+</div>
+
+<!-- ══ PAGE: STATS ══ -->
+<div class="page" id="page-stats">
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">STATS</div>
+    <div class="page-sub">// إحصائياتك</div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon">🏋️</div><div class="stat-val" id="st-ex">0</div><div class="stat-lbl">تمرين مكتمل</div></div>
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="st-days">0</div><div class="stat-lbl">أيام تدريب</div></div>
+    <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">أيام متتالية</div></div>
+    <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-val" id="st-xp">0</div><div class="stat-lbl">إجمالي XP</div></div>
+    <div class="stat-card full"><div class="stat-icon">🎯</div><div class="stat-val" id="st-ch">0</div><div class="stat-lbl">تحديات مكتملة</div></div>
+  </div>
+  <div class="section-lbl">آخر 7 أيام</div>
+  <div class="card"><div class="card-body"><div id="week-chart" class="week-chart"></div></div></div>
+</div>
+</div>
+
+<!-- ══ PAGE: PROFILE ══ -->
+<div class="page" id="page-profile">
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">PROFILE</div>
+    <div class="page-sub">// ملفك الشخصي</div>
+  </div>
+  <div class="profile-card">
+    <div class="profile-avatar">💪</div>
+    <div class="profile-name" id="profile-name">—</div>
+    <div class="profile-email" id="profile-email">—</div>
+    <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+  </div>
+  <div class="section-lbl">إنجازاتك</div>
+  <div id="profile-ach"></div>
+</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <button class="nav-item active" id="nav-home" onclick="switchPage('home')"><span class="ni">🏠</span>الرئيسية</button>
+  <button class="nav-item" id="nav-courses" onclick="switchPage('courses')"><span class="ni">📚</span>كورسات</button>
+  <button class="nav-item" id="nav-stats" onclick="switchPage('stats')"><span class="ni">📊</span>إحصائيات</button>
+  <button class="nav-item" id="nav-profile" onclick="switchPage('profile')"><span class="ni">👤</span>حسابي</button>
+</nav>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, query, orderBy, increment, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDwJvvw1om-WDoKHLMgRCOlkRvb04Ok99U",
+  authDomain: "wafeek-122a4.firebaseapp.com",
+  projectId: "wafeek-122a4",
+  storageBucket: "wafeek-122a4.firebasestorage.app",
+  messagingSenderId: "230711264269",
+  appId: "1:230711264269:web:c20f739b9aa36521f3c144",
+  measurementId: "G-MR42K99WWH"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ══ LEVELS ══
+const LEVELS = ['مبتدئ ⚡','مدرّب 💪','محترف 🔥','قوي ⚡','متقدم 🌟','نخبة 👑','أسطورة 🏆'];
+const LV_XP  = [0,100,250,500,900,1500,2500];
+const XP_MAP = {S:30,A:20,B:12,C:8,default:10,challenge:50};
+
+function getLevel(xp){ let l=0; for(let i=LV_XP.length-1;i>=0;i--){if(xp>=LV_XP[i]){l=i;break;}} return l; }
+
+// ══ STATE ══
+let currentUser = null;
+let userData = {};
+let isLogin = true;
+
+// ══ AUTH STATE ══
+const hideSplash = () => { const s = document.getElementById('splash'); if(s) s.classList.add('hidden'); };
+setTimeout(hideSplash, 5000);
+onAuthStateChanged(auth, async user => {
+  try {
+    if(user){
+      currentUser = user;
+      try { await loadUserData(); } catch(e){ userData = {}; }
+      showApp();
+    } else {
+      showAuth();
+    }
+  } catch(e){
+    showAuth();
+  } finally {
+    hideSplash();
+  }
+});
+
+function showApp(){
+  try {
+    document.getElementById('auth-screen').classList.remove('visible');
+    document.getElementById('app-header').style.display='flex';
+    document.getElementById('bottom-nav').style.display='flex';
+    try { renderHome(); } catch(e){}
+    try { updateLevelCard(); } catch(e){}
+    try { updateGreeting(); } catch(e){}
+  } catch(e){}
+}
+
+function showAuth(){
+  document.getElementById('auth-screen').classList.add('visible');
+  document.getElementById('app-header').style.display='none';
+  document.getElementById('bottom-nav').style.display='none';
+}
+
+// ══ USER DATA ══
+async function loadUserData(){
+  const ref = doc(db,'users',currentUser.uid);
+  const snap = await getDoc(ref);
+  if(snap.exists()){
+    userData = snap.data();
+  } else {
+    userData = { name: currentUser.displayName||'مستخدم', xp:0, streak:0, totalEx:0, totalDays:0, totalCh:0, log:{}, achiev:[] };
+    await setDoc(ref, userData);
+  }
+}
+
+async function saveUserData(updates){
+  userData = {...userData,...updates};
+  const ref = doc(db,'users',currentUser.uid);
+  await updateDoc(ref, updates).catch(()=>setDoc(ref,userData));
+}
+
+// ══ AUTH FUNCTIONS ══
+window.toggleAuth = function(){
+  isLogin = !isLogin;
+  document.getElementById('auth-title').textContent = isLogin?'تسجيل الدخول':'إنشاء حساب';
+  document.getElementById('auth-submit-btn').textContent = isLogin?'دخول ⚡':'إنشاء الحساب ⚡';
+  document.getElementById('auth-switch-text').textContent = isLogin?'ما عندك حساب؟ ':'عندك حساب؟ ';
+  document.querySelector('.auth-switch span:last-child').textContent = isLogin?'إنشاء حساب':'تسجيل الدخول';
+  document.getElementById('auth-name').style.display = isLogin?'none':'block';
+  document.getElementById('auth-err').textContent='';
+};
+
+window.authSubmit = async function(){
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-pass').value;
+  const name  = document.getElementById('auth-name').value.trim();
+  const errEl = document.getElementById('auth-err');
+  errEl.textContent='';
+  if(!email||!pass){errEl.textContent='أدخل البريد وكلمة المرور';return;}
+  try {
+    if(isLogin){
+      await signInWithEmailAndPassword(auth,email,pass);
+    } else {
+      if(!name){errEl.textContent='أدخل اسمك';return;}
+      const cred = await createUserWithEmailAndPassword(auth,email,pass);
+      await updateProfile(cred.user,{displayName:name});
+    }
+  } catch(e){
+    const msgs = {'auth/email-already-in-use':'البريد مستخدم مسبقاً','auth/wrong-password':'كلمة المرور خاطئة','auth/user-not-found':'المستخدم غير موجود','auth/weak-password':'كلمة المرور ضعيفة جداً','auth/invalid-email':'بريد غير صحيح','auth/invalid-credential':'البريد أو كلمة المرور خاطئة','auth/too-many-requests':'حاولت كثيراً، انتظر قليلاً','auth/network-request-failed':'تحقق من الاتصال بالإنترنت'};
+    errEl.textContent = msgs[e.code]||'حدث خطأ، حاول مرة ثانية';
+  }
+};
+
+window.logout = async function(){
+  if(confirm('تسجيل الخروج؟')){ await signOut(auth); }
+};
+
+// ══ NAVIGATION ══
+window.switchPage = function(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page).classList.add('active');
+  window.scrollTo(0,0);
+  if(page==='courses') renderCourses();
+  if(page==='stats') renderStats();
+  if(page==='profile') renderProfile();
+};
+
+// ══ GREETING ══
+function updateGreeting(){
+  try {
+    const name = currentUser?.displayName || userData?.name || 'بطل';
+    const h = new Date().getHours();
+    const gr = h<12?'صباح الخير':h<18?'مساء الخير':'مساء النور';
+    document.getElementById('home-greeting').textContent = gr+' '+name+' 👋';
+    const days=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const today=new Date();
+    document.getElementById('home-date').textContent='// '+days[today.getDay()]+' — '+today.toLocaleDateString('ar');
+  } catch(e){}
+}
+
+// ══ LEVEL CARD ══
+function updateLevelCard(){
+  const xp = userData.xp||0;
+  const lv = getLevel(xp);
+  const cur = LV_XP[lv]||0;
+  const next = LV_XP[lv+1]||cur+1000;
+  const pct = Math.min(100,Math.round((xp-cur)/(next-cur)*100));
+  const name = LEVELS[Math.min(lv,LEVELS.length-1)];
+
+  document.getElementById('lc-lv').textContent=lv;
+  document.getElementById('lc-name').textContent=name;
+  document.getElementById('lc-xp-fill').style.width=pct+'%';
+  document.getElementById('lc-xp-text').textContent=xp+' XP';
+  document.getElementById('lc-next').textContent=(next-xp)+' XP للترقية';
+  document.getElementById('lc-streak').textContent='🔥 '+(userData.streak||0);
+  document.getElementById('header-level').textContent='LVL '+(lv||1);
+}
+
+// ══ ADD XP ══
+async function addXP(amount){
+  const newXP = (userData.xp||0)+amount;
+  const oldLv = getLevel(userData.xp||0);
+  const newLv = getLevel(newXP);
+  await saveUserData({xp:newXP});
+  updateLevelCard();
+  if(newLv>oldLv) showToast('🎉 ترقية! المستوى '+newLv+' — '+LEVELS[Math.min(newLv,LEVELS.length-1)]);
+}
+
+// ══ CHALLENGES ══
+async function loadChallenges(){
+  // Return defaults immediately
+  const defaults = getDefaultChallenges();
+  try {
+    const snap = await getDocs(query(collection(db,'challenges'),orderBy('order')));
+    const challenges = [];
+    snap.forEach(d=>challenges.push({id:d.id,...d.data()}));
+    return challenges.length ? challenges : defaults;
+  } catch(e){ return defaults; }
+}
+
+function getDefaultChallenges(){
+  // Default weekly challenges if none in DB
+  const week = getWeekNumber();
+  return [
+    {id:'ch1',icon:'🏋️',title:'أكمل 3 جلسات هذا الأسبوع',desc:'Push + Pull + Legs',target:3,xp:150,type:'sessions',week},
+    {id:'ch2',icon:'💧',title:'اشرب 3 لتر ماء يومياً',desc:'لمدة 5 أيام متتالية',target:5,xp:100,type:'water',week},
+    {id:'ch3',icon:'🧠',title:'تحدي عقلي: تأمل 10 دقائق',desc:'يومياً لمدة 3 أيام',target:3,xp:80,type:'mind',week},
+    {id:'ch4',icon:'😴',title:'نم 7-8 ساعات',desc:'لمدة 4 ليالي متتالية',target:4,xp:90,type:'sleep',week},
+    {id:'ch5',icon:'🔥',title:'أكمل 50 تمريناً',desc:'مجموع هذا الأسبوع',target:50,xp:200,type:'exercises',week},
+  ];
+}
+
+function getWeekNumber(){
+  const d=new Date();
+  const onejan=new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7);
+}
+
+async function renderChallengesSection(){
+  const el=document.getElementById('challenges-list');
+  // Show defaults immediately
+  renderChallengesList(el, getDefaultChallenges());
+  const challenges = await loadChallenges();
+  const userCh = userData.challenges||{};
+  const week = getWeekNumber()+'_'+new Date().getFullYear();
+
+  renderChallengesList(el, challenges);
+}
+
+function renderChallengesList(el, challenges){
+  const userCh = userData.challenges||{};
+  const week = getWeekNumber()+'_'+new Date().getFullYear();
+  el.innerHTML=challenges.map(ch=>{
+    const key=ch.id+'_'+week;
+    const progress = userCh[key]||0;
+    const done = progress >= (ch.target||1);
+    const pct = Math.min(100,Math.round(progress/(ch.target||1)*100));
+    return `<div class="challenge-card">
+      <div class="ch-header">
+        <div class="ch-icon">${ch.icon||'🎯'}</div>
+        <div class="ch-info">
+          <div class="ch-title">${ch.title}</div>
+          <div class="ch-desc">${ch.desc||''}</div>
+        </div>
+        <div class="ch-xp">+${ch.xp||50} XP</div>
+      </div>
+      <div class="ch-progress"><div class="ch-fill" style="width:${pct}%"></div></div>
+      <div class="ch-footer">
+        <div class="ch-count">${progress} / ${ch.target||1}</div>
+        <button class="ch-btn ${done?'done':''}" onclick="progressChallenge('${ch.id}',${ch.target||1},${ch.xp||50})" ${done?'disabled':''}>
+          ${done?'✓ مكتمل':'تقدم +1'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.progressChallenge = async function(chId, target, xp){
+  try {
+    const week = getWeekNumber()+'_'+new Date().getFullYear();
+    const key = chId+'_'+week;
+    const chs = userData.challenges||{};
+    const cur = chs[key]||0;
+    if(cur>=target) return;
+    chs[key]=cur+1;
+    await saveUserData({challenges:chs});
+    if(chs[key]>=target){
+      await addXP(xp);
+      await saveUserData({totalCh:(userData.totalCh||0)+1});
+      showToast('🎉 تحدي مكتمل! +'+xp+' XP');
+      if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+    } else {
+      showToast('✓ تقدم +1');
+    }
+    renderChallengesSection();
+  } catch(e){ showToast('تعذر الحفظ، تحقق من الاتصال'); }
+};
+
+// ══ TODAY WORKOUT ══
+async function renderTodayWorkout(){
+  const el=document.getElementById('today-workout-card');
+  const CYCLE=['push','pull','legs','off'];
+  const anchor=new Date('2026-06-09T00:00:00');
+  const today=new Date(); today.setHours(0,0,0,0);
+  const diff=Math.round((today-anchor)/86400000);
+  const workout=CYCLE[((diff%4)+4)%4];
+
+  if(workout==='off'){
+    el.innerHTML=`<div class="card"><div class="card-body" style="text-align:center;padding:24px">
+      <div style="font-size:40px;margin-bottom:8px">😴</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text)">يوم راحة</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:6px;font-family:'Share Tech Mono',monospace">استرخي وكل بروتين 💪</div>
+    </div></div>`;
+    return;
+  }
+
+  // Show defaults immediately, then try Firestore in background
+  let exercises = getDefaultExercises(workout);
+  renderExercises(el, exercises, workout);
+  try {
+    const snap = await getDocs(collection(db,'workouts',workout,'exercises'));
+    const firestoreEx = [];
+    snap.forEach(d=>firestoreEx.push({id:d.id,...d.data()}));
+    if(firestoreEx.length) exercises = firestoreEx;
+  } catch(e){}
+
+  const dayNames={push:'دفع — Push 🔥',pull:'سحب — Pull 💪',legs:'أرجل — Legs 🦵'};
+  renderExercises(el, exercises, workout);
+}
+
+function renderExercises(el, exercises, workout){
+  const dayNames={push:'دفع — Push 🔥',pull:'سحب — Pull 💪',legs:'أرجل — Legs 🦵'};
+  el.innerHTML=`<div class="ex-card" style="margin-bottom:6px">
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+      <div style="font-size:15px;font-weight:800;color:var(--text)">${dayNames[workout]||workout}</div>
+    </div>
+    ${exercises.map((ex,i)=>`
+    <div class="ex-header" onclick="toggleEx(this)" style="border-bottom:1px solid rgba(0,180,216,.04)">
+      <input type="checkbox" class="ex-check" onchange="completeEx('${ex.id||i}','${ex.diff||'B'}',this)" onclick="event.stopPropagation()" ${isExDone(ex.id||i)?'checked':''}>
+      <div class="ex-info">
+        <div class="ex-name">${ex.name||ex.nameAr||'تمرين'}</div>
+        <div class="ex-en">${ex.nameEn||''}</div>
+      </div>
+      <div class="ex-right">
+        <span class="ex-sets">${ex.sets||'3×10'}</span>
+        <span class="diff-badge diff-${(ex.diff||'b').toLowerCase()}">${ex.diff||'B'}</span>
+      </div>
+    </div>
+    ${ex.note?`<div class="ex-details"><div class="ex-note">${ex.note}</div></div>`:''}
+    `).join('')}
+  </div>`;
+}
+
+function isExDone(id){
+  const today = new Date().toISOString().slice(0,10);
+  return !!(userData.log&&userData.log[today]&&userData.log[today][id]);
+}
+
+window.toggleEx = function(el){
+  try {
+    // el is the .ex-header div that was clicked
+    const card = el.closest('.ex-header');
+    if(card){
+      const details = card.nextElementSibling;
+      if(details && details.classList.contains('ex-details')){
+        const isOpen = details.style.maxHeight && details.style.maxHeight !== '0px';
+        details.style.maxHeight = isOpen ? '' : '150px';
+        details.style.opacity = isOpen ? '0' : '1';
+        details.style.padding = isOpen ? '' : '0 16px 14px';
+      }
+    }
+  } catch(e){}
+};
+
+window.completeEx = async function(id, diff, cb){
+  try {
+    const today = new Date().toISOString().slice(0,10);
+    const log = userData.log||{};
+    if(!log[today]) log[today]={};
+
+    if(cb.checked){
+      log[today][id]=true;
+      const xpGain = XP_MAP[diff]||XP_MAP.default;
+      await addXP(xpGain);
+      const totalEx = (userData.totalEx||0)+1;
+      await saveUserData({log, totalEx});
+      showToast('+'+xpGain+' XP 💪');
+      if(navigator.vibrate) navigator.vibrate([50,30,50]);
+    } else {
+      delete log[today][id];
+      await saveUserData({log});
+    }
+  } catch(e){ showToast('تعذر الحفظ، تحقق من الاتصال'); }
+};
+
+function getDefaultExercises(day){
+  const ex={
+    push:[
+      {id:'d1-1',nameAr:'بنش بريس بالبار',nameEn:'Bench Press',sets:'4×6-10',diff:'S',note:'ظهرك ملتصق بالمقعد، كوعك 45°'},
+      {id:'d1-2',nameAr:'بنش دامبل مائل',nameEn:'Incline DB Press',sets:'3×8-12',diff:'A'},
+      {id:'d1-3',nameAr:'جهاز فراشة الصدر',nameEn:'Pec Deck',sets:'3×10-12',diff:'B'},
+      {id:'d1-4',nameAr:'جهاز ضغط الكتف',nameEn:'Shoulder Press',sets:'3×8-12',diff:'A'},
+      {id:'d1-5',nameAr:'رفع جانبي دامبل',nameEn:'Lateral Raise',sets:'3×12-15',diff:'B'},
+      {id:'d1-6',nameAr:'دفع كيبل للأسفل',nameEn:'Tricep Pushdown',sets:'3×10-12',diff:'B'},
+      {id:'d1-7',nameAr:'مد ترايسبس فوق الرأس',nameEn:'Overhead Extension',sets:'3×10-12',diff:'C'},
+    ],
+    pull:[
+      {id:'d2-1',nameAr:'سحب علوي واسع',nameEn:'Lat Pulldown',sets:'4×8-12',diff:'S'},
+      {id:'d2-2',nameAr:'جهاز السحب السفلي',nameEn:'Seated Row',sets:'4×8-12',diff:'S'},
+      {id:'d2-3',nameAr:'سحب دامبل بيد وحدة',nameEn:'DB Row',sets:'3×8-12',diff:'A'},
+      {id:'d2-4',nameAr:'شد كيبل للوجه',nameEn:'Face Pull',sets:'3×15',diff:'B'},
+      {id:'d2-5',nameAr:'جهاز الكتف الخلفي',nameEn:'Rear Delt Machine',sets:'3×12-15',diff:'B'},
+      {id:'d2-6',nameAr:'كرل بار EZ',nameEn:'EZ Bar Curl',sets:'3×8-12',diff:'A'},
+      {id:'d2-7',nameAr:'كرل دامبل متناوب',nameEn:'Alternating Curl',sets:'3×10-12',diff:'B'},
+    ],
+    legs:[
+      {id:'d3-1',nameAr:'ديدليفت',nameEn:'Deadlift',sets:'3×6-8',diff:'S'},
+      {id:'d3-2',nameAr:'جهاز هاك سكوات',nameEn:'Hack Squat',sets:'4×8-12',diff:'S'},
+      {id:'d3-3',nameAr:'جهاز ضغط الأرجل',nameEn:'Leg Press',sets:'3×10-12',diff:'A'},
+      {id:'d3-4',nameAr:'جهاز كرل الأرجل',nameEn:'Leg Curl',sets:'3×10-12',diff:'A'},
+      {id:'d3-5',nameAr:'جهاز مد الأرجل',nameEn:'Leg Extension',sets:'3×10-12',diff:'B'},
+      {id:'d3-6',nameAr:'رفع السمانة',nameEn:'Calf Raise',sets:'4×15-20',diff:'B'},
+      {id:'d3-7',nameAr:'كرنش جهاز',nameEn:'Ab Crunch',sets:'3×15',diff:'C'},
+    ]
+  };
+  return (ex[day]||[]).map(e=>({...e,name:e.nameAr}));
+}
+
+// ══ DEFAULT COURSES ══
+function getDefaultCourses(){
+  return [
+    {id:'c1',icon:'🔥',name:'برنامج القوة للمبتدئين',desc:'برنامج Push/Pull/Legs لبناء القوة والعضلات من الصفر خلال 8 أسابيع',level:'مبتدئ',duration:'8 أسابيع',exercises:24,order:1},
+    {id:'c2',icon:'💪',name:'تضخيم الجسم — Hypertrophy',desc:'برنامج متخصص لزيادة حجم العضلات بتقنيات علمية متقدمة',level:'متوسط',duration:'10 أسابيع',exercises:30,order:2},
+    {id:'c3',icon:'⚡',name:'اللياقة المتكاملة',desc:'مزيج من القوة والكارديو لتحسين الأداء العام وحرق الدهون',level:'مبتدئ',duration:'6 أسابيع',exercises:18,order:3},
+    {id:'c4',icon:'🏆',name:'برنامج النخبة — Elite',desc:'تدريب متقدم بشدة عالية مخصص لمن أتمّوا المراحل السابقة',level:'متقدم',duration:'12 أسبوع',exercises:36,order:4},
+    {id:'c5',icon:'🧘',name:'التعافي والمرونة',desc:'تمارين الإطالة والتعافي الفعّال لتحسين الأداء وتقليل الإصابات',level:'الكل',duration:'مستمر',exercises:15,order:5},
+  ];
+}
+
+// ══ COURSES ══
+async function renderCourses(){
+  const el=document.getElementById('courses-list');
+  let courses = getDefaultCourses();
+  renderCoursesList(el, courses);
+  try{
+    const snap=await getDocs(query(collection(db,'courses'),orderBy('order')));
+    const firestoreCourses=[];
+    snap.forEach(d=>firestoreCourses.push({id:d.id,...d.data()}));
+    if(firestoreCourses.length){ courses=firestoreCourses; renderCoursesList(el, courses); }
+  }catch(e){}
+
+}
+
+function renderCoursesList(el, courses){
+  el.innerHTML=courses.map(c=>{
+    const uch=userData.courses||{};
+    const pct=uch[c.id]||0;
+    return `<div class="course-card" onclick="openCourse('${c.id}')">
+      <div class="course-img">${c.icon||'💪'}</div>
+      <div class="course-body">
+        <div class="course-name">${c.name||'كورس'}</div>
+        <div class="course-desc">${c.desc||''}</div>
+        <div class="course-meta">
+          ${c.level?`<span class="course-tag">${c.level}</span>`:''}
+          ${c.duration?`<span class="course-tag">${c.duration}</span>`:''}
+          ${c.exercises?`<span class="course-tag">${c.exercises} تمرين</span>`:''}
+        </div>
+        <div class="course-progress"><div class="course-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.openCourse = function(id){ showToast('قريباً — تفاصيل الكورس'); };
+
+// ══ STATS ══
+function renderStats(){
+  document.getElementById('st-ex').textContent=userData.totalEx||0;
+  document.getElementById('st-days').textContent=userData.totalDays||0;
+  document.getElementById('st-streak').textContent=userData.streak||0;
+  document.getElementById('st-xp').textContent=userData.xp||0;
+  document.getElementById('st-ch').textContent=userData.totalCh||0;
+
+  // Week chart
+  const chart=document.getElementById('week-chart');
+  const log=userData.log||{};
+  const days=['أح','إث','ثل','أر','خم','جم','سب'];
+  const today=new Date();
+  const bars=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today.getTime()-i*86400000);
+    const k=d.toISOString().slice(0,10);
+    const count=log[k]?Object.keys(log[k]).length:0;
+    const isToday=k===today.toISOString().slice(0,10);
+    bars.push({lbl:days[d.getDay()],count,max:10,isToday});
+  }
+  const maxCount=Math.max(...bars.map(b=>b.count),1);
+  chart.innerHTML=bars.map(b=>`<div class="wb">
+    <div class="wb-bar"><div class="wb-fill" style="height:${Math.round(b.count/maxCount*100)||4}%"></div></div>
+    <div class="wb-lbl ${b.isToday?'today':''}">${b.lbl}</div>
+  </div>`).join('');
+}
+
+// ══ PROFILE ══
+function renderProfile(){
+  document.getElementById('profile-name').textContent=currentUser?.displayName||userData?.name||'مستخدم';
+  document.getElementById('profile-email').textContent=currentUser?.email||'';
+  // achievements
+  const achs=[
+    {id:'first',icon:'⚡',name:'الشرارة الأولى',check:()=>(userData.totalEx||0)>=1},
+    {id:'lv3',icon:'🔥',name:'المستوى 3',check:()=>getLevel(userData.xp||0)>=3},
+    {id:'streak7',icon:'👑',name:'أسبوع متتالي',check:()=>(userData.streak||0)>=7},
+    {id:'ex50',icon:'🏆',name:'50 تمرين',check:()=>(userData.totalEx||0)>=50},
+    {id:'ch5',icon:'🎯',name:'5 تحديات',check:()=>(userData.totalCh||0)>=5},
+  ];
+  document.getElementById('profile-ach').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    ${achs.map(a=>{const ok=a.check();return`<div class="card" style="opacity:${ok?1:.4};filter:${ok?'none':'grayscale(.5)'}">
+      <div class="card-body" style="text-align:center;padding:14px">
+        <div style="font-size:28px;margin-bottom:6px">${a.icon}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--text)">${a.name}</div>
+        ${ok?'<div style="font-size:9px;color:var(--a2);margin-top:4px;font-family:Share Tech Mono,monospace">✓ مكتسب</div>':'<div style="font-size:9px;color:var(--text-muted);margin-top:4px;font-family:Share Tech Mono,monospace">🔒 مقفل</div>'}
+      </div>
+    </div>`}).join('')}
+  </div>`;
+}
+
+// ══ HOME RENDER ══
+async function renderHome(){
+  await renderChallengesSection();
+  await renderTodayWorkout();
+}
+
+// ══ TOAST ══
+let toastT=null;
+window.showToast=function(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2800);
+};
+</script>
+</body>
+</html>
